@@ -78,6 +78,9 @@ function App() {
           <h1 className="text-3xl font-bold text-text text-center">
             GitHub Repo Copier
           </h1>
+          <p className="text-center text-gray-600 mt-2">
+            Copying an entire repo has never been easier, useful for context to pass to LLMs.
+          </p>
         </div>
       </header>
 
