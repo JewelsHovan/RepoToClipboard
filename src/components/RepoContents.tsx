@@ -19,6 +19,17 @@ export default function RepoContents({ contents, repoName }: RepoContentsProps) 
     }
   };
 
+  const handleCopyAll = async () => {
+    try {
+      const formattedContent = formatForTxt(contents);
+      await copyToClipboard(formattedContent);
+      setCopiedPath('all');
+      setTimeout(() => setCopiedPath(null), 2000);
+    } catch (err) {
+      console.error('Failed to copy all contents:', err);
+    }
+  };
+
   const handleExportAll = (format: 'md' | 'txt') => {
     const formatter = format === 'md' ? formatForMarkdown : formatForTxt;
     const content = formatter(contents);
@@ -30,6 +41,12 @@ export default function RepoContents({ contents, repoName }: RepoContentsProps) 
       <div className="flex justify-between items-center mb-4">
         <h3 className="text-xl font-semibold">Repository Contents</h3>
         <div className="space-x-2">
+          <button
+            onClick={handleCopyAll}
+            className="px-3 py-1 bg-primary text-white rounded hover:bg-primary/90"
+          >
+            {copiedPath === 'all' ? 'Copied!' : 'Copy All'}
+          </button>
           <button
             onClick={() => handleExportAll('md')}
             className="px-3 py-1 bg-primary text-white rounded hover:bg-primary/90"
