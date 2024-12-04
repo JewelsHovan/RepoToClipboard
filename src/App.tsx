@@ -2,6 +2,7 @@ import { useState } from 'react'
 import './App.css'
 import URLInput from './components/URLInput'
 import axios from 'axios'
+import RepoContents from './components/RepoContents'
 
 function App() {
   const [repoData, setRepoData] = useState<any>(null);
@@ -109,24 +110,10 @@ function App() {
         )}
 
         {repoData?.contents && (
-          <div className="mt-6 bg-white shadow rounded-lg p-6">
-            <h3 className="text-xl font-semibold mb-4">Repository Contents</h3>
-            <ul className="space-y-2">
-              {Array.isArray(repoData.contents) && repoData.contents.map((item: any) => (
-                <li key={item.path} className="flex flex-col">
-                  <div className="flex items-center">
-                    <span className="text-gray-600">{item.type === 'dir' ? '📁' : '📄'}</span>
-                    <span className="ml-2">{item.path}</span>
-                  </div>
-                  {item.content && (
-                    <pre className="mt-2 p-2 bg-gray-50 rounded text-sm overflow-x-auto">
-                      {typeof item.content === 'string' ? item.content : JSON.stringify(item.content, null, 2)}
-                    </pre>
-                  )}
-                </li>
-              ))}
-            </ul>
-          </div>
+          <RepoContents 
+            contents={repoData.contents} 
+            repoName={repoData.full_name} 
+          />
         )}
 
         {/* Error message */}
