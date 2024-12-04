@@ -6,6 +6,64 @@ interface RepoContentsProps {
   repoName: string;
 }
 
+// Add this new component for recursive rendering
+const FileTreeItem = ({ item, onCopyFile, copiedPath }: {
+  item: any;
+  onCopyFile: (content: string, path: string) => void;
+  copiedPath: string | null;
+}) => {
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  const toggleExpand = () => {
+    setIsExpanded(!isExpanded);
+  };
+
+  return (
+    <li className="flex flex-col">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center">
+          {item.type === 'dir' && (
+            <button onClick={toggleExpand} className="mr-2">
+              {isExpanded ? '▼' : '▶'}
+            </button>
+          )}
+          <span className="text-gray-600">{item.type === 'dir' ? '📁' : '📄'}</span>
+          <span className="ml-2">{item.path}</span>
+        </div>
+        {item.type === 'file' && item.content && (
+          <button
+            onClick={() => onCopyFile(item.content, item.path)}
+            className="px-2 py-1 text-sm bg-gray-100 rounded hover:bg-gray-200"
+          >
+            {copiedPath === item.path ? 'Copied!' : 'Copy'}
+          </button>
+        )}
+      </div>
+      
+      {/* Display file content */}
+      {item.type === 'file' && item.content && (
+        <pre className="mt-2 p-2 bg-gray-50 rounded text-sm overflow-x-auto">
+          {typeof item.content === 'string' ? item.content : JSON.stringify(item.content, null, 2)}
+        </pre>
+      )}
+      
+      {/* Recursively render directory contents if expanded */}
+      {item.type === 'dir' && isExpanded && item.contents && (
+        <ul className="ml-6 mt-2 space-y-2">
+          {item.contents.map((subItem: any) => (
+            <FileTreeItem
+              key={subItem.path}
+              item={subItem}
+              onCopyFile={onCopyFile}
+              copiedPath={copiedPath}
+            />
+          ))}
+        </ul>
+      )}
+    </li>
+  );
+};
+
 export default function RepoContents({ contents, repoName }: RepoContentsProps) {
   const [copiedPath, setCopiedPath] = useState<string | null>(null);
 
@@ -64,27 +122,12 @@ export default function RepoContents({ contents, repoName }: RepoContentsProps) 
       
       <ul className="space-y-2">
         {Array.isArray(contents) && contents.map((item: any) => (
-          <li key={item.path} className="flex flex-col">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center">
-                <span className="text-gray-600">{item.type === 'dir' ? '📁' : '📄'}</span>
-                <span className="ml-2">{item.path}</span>
-              </div>
-              {item.type === 'file' && item.content && (
-                <button
-                  onClick={() => handleCopyFile(item.content, item.path)}
-                  className="px-2 py-1 text-sm bg-gray-100 rounded hover:bg-gray-200"
-                >
-                  {copiedPath === item.path ? 'Copied!' : 'Copy'}
-                </button>
-              )}
-            </div>
-            {item.content && (
-              <pre className="mt-2 p-2 bg-gray-50 rounded text-sm overflow-x-auto">
-                {typeof item.content === 'string' ? item.content : JSON.stringify(item.content, null, 2)}
-              </pre>
-            )}
-          </li>
+          <FileTreeItem
+            key={item.path}
+            item={item}
+            onCopyFile={handleCopyFile}
+            copiedPath={copiedPath}
+          />
         ))}
       </ul>
     </div>

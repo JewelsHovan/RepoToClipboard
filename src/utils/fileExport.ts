@@ -2,12 +2,15 @@ interface FileData {
   path: string;
   type: string;
   content?: string;
+  contents?: FileData[];
 }
 
 export const formatForMarkdown = (files: FileData[]): string => {
   return files.map(file => {
     if (file.type === 'file' && file.content) {
       return `## ${file.path}\n\`\`\`\n${file.content}\n\`\`\`\n`;
+    } else if (file.type === 'dir' && file.contents) {
+      return `### ${file.path}\n${formatForMarkdown(file.contents)}`;
     }
     return '';
   }).join('\n');
@@ -17,6 +20,8 @@ export const formatForTxt = (files: FileData[]): string => {
   return files.map(file => {
     if (file.type === 'file' && file.content) {
       return `=== ${file.path} ===\n${file.content}\n\n`;
+    } else if (file.type === 'dir' && file.contents) {
+      return `--- ${file.path} ---\n${formatForTxt(file.contents)}`;
     }
     return '';
   }).join('\n');
