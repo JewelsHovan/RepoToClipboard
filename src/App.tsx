@@ -27,14 +27,40 @@ function App() {
         `https://api.github.com/repos/${owner}/${repo}/contents`, 
         {
           headers: {
-            'Accept': 'application/vnd.github.v3+json'
+            'Accept': 'application/vnd.github.v3.raw'
           }
         }
       );
 
+      // Function to fetch individual file contents
+      const fetchFileContent = async (path: string) => {
+        const fileResponse = await axios.get(
+          `https://api.github.com/repos/${owner}/${repo}/contents/${path}`,
+          {
+            headers: {
+              'Accept': 'application/vnd.github.v3.raw'
+            }
+          }
+        );
+        return fileResponse.data;
+      };
+
+      // Process directory contents and fetch file contents
+      const processContents = async (items: any[]) => {
+        return Promise.all(items.map(async (item) => {
+          if (item.type === 'file') {
+            const content = await fetchFileContent(item.path);
+            return { ...item, content };
+          }
+          return item;
+        }));
+      };
+
+      const processedContents = await processContents(contentsResponse.data);
+
       setRepoData({
         ...repoResponse.data,
-        contents: contentsResponse.data
+        contents: processedContents
       });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to fetch repository');
@@ -87,9 +113,16 @@ function App() {
             <h3 className="text-xl font-semibold mb-4">Repository Contents</h3>
             <ul className="space-y-2">
               {Array.isArray(repoData.contents) && repoData.contents.map((item: any) => (
-                <li key={item.path} className="flex items-center">
-                  <span className="text-gray-600">{item.type === 'dir' ? '📁' : '📄'}</span>
-                  <span className="ml-2">{item.path}</span>
+                <li key={item.path} className="flex flex-col">
+                  <div className="flex items-center">
+                    <span className="text-gray-600">{item.type === 'dir' ? '📁' : '📄'}</span>
+                    <span className="ml-2">{item.path}</span>
+                  </div>
+                  {item.content && (
+                    <pre className="mt-2 p-2 bg-gray-50 rounded text-sm overflow-x-auto">
+                      {typeof item.content === 'string' ? item.content : JSON.stringify(item.content, null, 2)}
+                    </pre>
+                  )}
                 </li>
               ))}
             </ul>
