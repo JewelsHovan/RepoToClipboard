@@ -3,6 +3,7 @@ import './App.css'
 import URLInput from './components/URLInput'
 import axios from 'axios'
 import RepoContents from './components/RepoContents'
+import Footer from './components/Footer'
 
 const MAX_DEPTH = 5; // Maximum directory depth
 const MAX_FILES = 1000; // Maximum total files to fetch
@@ -118,7 +119,7 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background flex flex-col">
       <header className="bg-white shadow">
         <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
           <h1 className="text-3xl font-bold text-text text-center">
@@ -130,7 +131,7 @@ function App() {
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+      <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8 flex-grow">
         <div className="bg-white shadow rounded-lg p-6">
           <div className="max-w-xl mx-auto">
             <URLInput onFetchRepo={handleFetchRepo} isLoading={loading} />
@@ -172,6 +173,8 @@ function App() {
           </div>
         )}
       </main>
+
+      <Footer />
     </div>
   )
 }
