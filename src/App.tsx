@@ -1,9 +1,10 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import './App.css'
 import URLInput from './components/URLInput'
 import axios from 'axios'
 import RepoContents from './components/RepoContents'
 import Footer from './components/Footer'
+import TreeVisualization from './components/TreeVisualization'
 
 const MAX_DEPTH = 5; // Maximum directory depth
 const MAX_FILES = 1000; // Maximum total files to fetch
@@ -20,6 +21,8 @@ function App() {
   const [repoData, setRepoData] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [scrollHandler, setScrollHandler] = useState<any>(null);
+  const repoContentsRef = useRef<any>(null);
 
   const handleFetchRepo = async (url: string) => {
     setLoading(true);
@@ -160,10 +163,22 @@ function App() {
         )}
 
         {repoData?.contents && (
-          <RepoContents 
-            contents={repoData.contents} 
-            repoName={repoData.full_name} 
-          />
+          <>
+            <TreeVisualization 
+              contents={repoData.contents} 
+              repoName={repoData.name}
+              onNodeClick={(path) => {
+                if (repoContentsRef.current) {
+                  repoContentsRef.current.scrollToContent(path);
+                }
+              }}
+            />
+            <RepoContents 
+              contents={repoData.contents} 
+              repoName={repoData.full_name}
+              ref={repoContentsRef}
+            />
+          </>
         )}
 
         {/* Error message */}
