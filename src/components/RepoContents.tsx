@@ -14,44 +14,44 @@ const FileTreeItem = ({ item, onCopyFile, copiedPath }: {
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
 
-  const toggleExpand = () => {
-    setIsExpanded(!isExpanded);
-  };
-
   return (
-    <li className="flex flex-col">
-      <div className="flex items-center justify-between p-2 rounded-md hover:bg-gray-50 transition-all duration-200">
-        <div className="flex items-center">
+    <li className="flex flex-col w-full">
+      <div className="flex items-center justify-between p-2 rounded-md hover:bg-gray-50 transition-all duration-200 w-full overflow-hidden">
+        <div className="flex items-center min-w-0 flex-1 overflow-hidden">
           {item.type === 'dir' && (
-            <button onClick={toggleExpand} className="mr-2 text-gray-600 hover:text-primary transition-colors">
+            <button onClick={() => setIsExpanded(!isExpanded)} className="mr-2 text-gray-600 hover:text-primary transition-colors flex-shrink-0">
               {isExpanded ? '▼' : '▶'}
             </button>
           )}
-          <span className="text-gray-600">{item.type === 'dir' ? '📁' : '📄'}</span>
-          <span className="ml-2 text-gray-700">{item.path}</span>
+          <span className="text-gray-600 flex-shrink-0">{item.type === 'dir' ? '📁' : '📄'}</span>
+          <span className="ml-2 text-gray-700 truncate max-w-[200px] sm:max-w-[400px]">{item.path}</span>
         </div>
         {item.type === 'file' && item.content && (
           <button
             onClick={() => onCopyFile(item.content, item.path)}
             className="px-3 py-1.5 text-sm bg-white rounded-md hover:bg-gray-50 
-                     shadow-sm hover:shadow transition-all duration-200 text-gray-700"
+                     shadow-sm hover:shadow transition-all duration-200 text-gray-700 ml-2 flex-shrink-0"
           >
             {copiedPath === item.path ? 'Copied!' : 'Copy'}
           </button>
         )}
       </div>
       
-      {/* File content with enhanced styling */}
       {item.type === 'file' && item.content && (
-        <pre className="mt-2 p-4 bg-gray-50 rounded-lg text-sm overflow-x-auto
-                      shadow-inner border border-gray-100">
-          {typeof item.content === 'string' ? item.content : JSON.stringify(item.content, null, 2)}
-        </pre>
+        <div className="mt-2 relative w-full">
+          <div className="overflow-x-auto">
+            <pre className="p-4 bg-gray-50 rounded-lg text-sm
+                         shadow-inner border border-gray-100 max-w-full">
+              <code className="break-words whitespace-pre-wrap text-xs sm:text-sm">
+                {typeof item.content === 'string' ? item.content : JSON.stringify(item.content, null, 2)}
+              </code>
+            </pre>
+          </div>
+        </div>
       )}
       
-      {/* Recursively render directory contents if expanded */}
       {item.type === 'dir' && isExpanded && item.contents && (
-        <ul className="ml-6 mt-2 space-y-2">
+        <ul className="ml-4 sm:ml-6 mt-2 space-y-2 w-full">
           {item.contents.map((subItem: any) => (
             <FileTreeItem
               key={subItem.path}
@@ -97,35 +97,35 @@ export default function RepoContents({ contents, repoName }: RepoContentsProps) 
   };
 
   return (
-    <div className="mt-6 bg-white rounded-xl p-6 shadow-md hover:shadow-lg transition-shadow duration-300">
-      <div className="flex justify-between items-center mb-6">
+    <div className="mt-6 bg-white rounded-xl p-2 sm:p-6 shadow-md hover:shadow-lg transition-shadow duration-300 max-w-full overflow-hidden">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <h3 className="text-xl font-semibold text-gray-800">Repository Contents</h3>
-        <div className="space-x-3">
+        <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
           <button
             onClick={handleCopyAll}
-            className="px-4 py-2 bg-primary text-white rounded-md hover:shadow-md
-                     transition-all duration-200 hover:bg-primary/90 active:shadow-inner"
+            className="px-3 sm:px-4 py-2 bg-primary text-white rounded-md hover:shadow-md
+                     transition-all duration-200 hover:bg-primary/90 active:shadow-inner w-full sm:w-auto text-sm"
           >
             {copiedPath === 'all' ? 'Copied!' : 'Copy All'}
           </button>
           <button
             onClick={() => handleExportAll('md')}
-            className="px-4 py-2 bg-primary text-white rounded-md hover:shadow-md
-                     transition-all duration-200 hover:bg-primary/90 active:shadow-inner"
+            className="px-3 sm:px-4 py-2 bg-primary text-white rounded-md hover:shadow-md
+                     transition-all duration-200 hover:bg-primary/90 active:shadow-inner w-full sm:w-auto text-sm"
           >
             Export as MD
           </button>
           <button
             onClick={() => handleExportAll('txt')}
-            className="px-4 py-2 bg-primary text-white rounded-md hover:shadow-md
-                     transition-all duration-200 hover:bg-primary/90 active:shadow-inner"
+            className="px-3 sm:px-4 py-2 bg-primary text-white rounded-md hover:shadow-md
+                     transition-all duration-200 hover:bg-primary/90 active:shadow-inner w-full sm:w-auto text-sm"
           >
             Export as TXT
           </button>
         </div>
       </div>
       
-      <ul className="space-y-2">
+      <ul className="space-y-2 w-full">
         {Array.isArray(contents) && contents.map((item: any) => (
           <FileTreeItem
             key={item.path}

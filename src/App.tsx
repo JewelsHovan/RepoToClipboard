@@ -121,18 +121,18 @@ function App() {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <header className="bg-white shadow">
-        <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-          <h1 className="text-3xl font-bold text-text text-center">
+        <div className="max-w-7xl mx-auto py-4 sm:py-6 px-4 sm:px-6 lg:px-8">
+          <h1 className="text-2xl sm:text-3xl font-bold text-text text-center break-words">
             GitHub Repo Copier
           </h1>
-          <p className="text-center text-gray-600 mt-2">
+          <p className="text-center text-gray-600 mt-2 text-sm sm:text-base px-2">
             Copying an entire repo has never been easier, useful for context to pass to LLMs.
           </p>
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8 flex-grow">
-        <div className="bg-white shadow rounded-lg p-6">
+      <main className="max-w-7xl mx-auto py-4 sm:py-6 px-4 sm:px-6 lg:px-8 flex-grow">
+        <div className="bg-white shadow rounded-lg p-4 sm:p-6">
           <div className="max-w-xl mx-auto">
             <URLInput onFetchRepo={handleFetchRepo} isLoading={loading} />
           </div>
@@ -140,18 +140,18 @@ function App() {
 
         {/* Conditional rendering for repo data */}
         {repoData && (
-          <div className="mt-6 bg-white shadow rounded-lg p-6">
+          <div className="mt-6 bg-white shadow rounded-lg p-4 sm:p-6">
             <div className="prose max-w-none">
-              <h2 className="text-2xl font-bold">{repoData.full_name}</h2>
-              <p className="text-gray-600">{repoData.description}</p>
+              <h2 className="text-xl sm:text-2xl font-bold break-words">{repoData.full_name}</h2>
+              <p className="text-gray-600 text-sm sm:text-base">{repoData.description}</p>
               <div className="mt-4">
-                <p>
+                <p className="text-sm sm:text-base">
                   <span className="font-semibold">Owner:</span> {repoData.owner.login}
                 </p>
-                <p>
+                <p className="text-sm sm:text-base">
                   <span className="font-semibold">Stars:</span> {repoData.stargazers_count}
                 </p>
-                <p>
+                <p className="text-sm sm:text-base">
                   <span className="font-semibold">Default Branch:</span> {repoData.default_branch}
                 </p>
               </div>
