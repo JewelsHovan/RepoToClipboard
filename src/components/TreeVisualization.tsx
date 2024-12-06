@@ -20,12 +20,35 @@ interface ExtendedRawNodeDatum extends RawNodeDatum {
 
 const CustomNode = ({ nodeDatum, toggleNode, onNodeClick }: CustomNodeProps & { onNodeClick: (path: string) => void }) => {
   const isDirectory = nodeDatum.children && nodeDatum.children.length > 0;
+  const [clickTimeout, setClickTimeout] = useState<NodeJS.Timeout | null>(null);
   
   const handleClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    onNodeClick(String(nodeDatum.attributes?.path || nodeDatum.name));
-    toggleNode();
+    
+    if (clickTimeout) {
+      // Double click detected
+      clearTimeout(clickTimeout);
+      setClickTimeout(null);
+      onNodeClick(String(nodeDatum.attributes?.path || nodeDatum.name));
+    } else {
+      // Set timeout for single click
+      const timeout = setTimeout(() => {
+        toggleNode();
+        setClickTimeout(null);
+      }, 250); // 250ms delay to detect double click
+      
+      setClickTimeout(timeout);
+    }
   };
+  
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (clickTimeout) {
+        clearTimeout(clickTimeout);
+      }
+    };
+  }, [clickTimeout]);
   
   return (
     <g onClick={handleClick}>
@@ -58,21 +81,24 @@ const TreeVisualization = ({ contents, repoName, onNodeClick }: TreeVisualizatio
   const containerRef = useRef<HTMLDivElement>(null);
   const [treeRef, setTreeRef] = useState<any>(null);
   const initialZoom = 0.8;
+  const [showOnlyDirectories, setShowOnlyDirectories] = useState(false);
 
   // Transform data
   const transformToTreeData = useCallback((items: any[], parentName: string): ExtendedRawNodeDatum => ({
     name: parentName,
     attributes: { path: items[0]?.path?.split('/')[0] || parentName },
-    children: items.map(item => {
-      if (item.type === 'dir' && item.contents) {
-        return transformToTreeData(item.contents, item.name);
-      }
-      return { 
-        name: item.name,
-        attributes: { path: item.path }
-      };
-    }),
-  }), []);
+    children: items
+      .filter(item => !showOnlyDirectories || item.type === 'dir')
+      .map(item => {
+        if (item.type === 'dir' && item.contents) {
+          return transformToTreeData(item.contents, item.name);
+        }
+        return { 
+          name: item.name,
+          attributes: { path: item.path }
+        };
+      }),
+  }), [showOnlyDirectories]);
 
   const treeData = [transformToTreeData(contents, repoName)];
 
@@ -141,21 +167,44 @@ const TreeVisualization = ({ contents, repoName, onNodeClick }: TreeVisualizatio
 
   return (
     <div className="mt-6 bg-white rounded-xl p-2 sm:p-6 shadow-md hover:shadow-lg transition-shadow duration-300">
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="text-xl font-semibold text-gray-800">Repository Structure</h3>
-        <div className="flex gap-2">
-          <button
-            onClick={handleExpandAll}
-            className="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-md transition-colors"
-          >
-            Expand All
-          </button>
-          <button
-            onClick={handleCollapseAll}
-            className="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-md transition-colors"
-          >
-            Collapse All
-          </button>
+      <div className="flex flex-col gap-4">
+        <div className="flex items-center justify-between">
+          <h3 className="text-xl font-semibold text-gray-800">Repository Structure</h3>
+          <div className="flex gap-2">
+            <button
+              onClick={() => setShowOnlyDirectories(!showOnlyDirectories)}
+              className={`px-3 py-1 text-sm ${
+                showOnlyDirectories 
+                  ? 'bg-yellow-100 hover:bg-yellow-200 text-yellow-800' 
+                  : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
+              } rounded-md transition-colors`}
+            >
+              {showOnlyDirectories ? 'Show All' : 'Directories Only'}
+            </button>
+            <button
+              onClick={handleExpandAll}
+              className="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-md transition-colors"
+            >
+              Expand All
+            </button>
+            <button
+              onClick={handleCollapseAll}
+              className="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-md transition-colors"
+            >
+              Collapse All
+            </button>
+          </div>
+        </div>
+        
+        <div className="text-sm text-gray-600 bg-blue-50 p-3 rounded-md">
+          <p>
+            <span className="font-medium">📁 Directories</span> are shown in yellow, 
+            <span className="font-medium"> 📄 Files</span> in blue.
+          </p>
+          <p className="mt-1">
+            <span className="font-medium">Single click</span> to expand/collapse nodes.
+            <span className="font-medium ml-2">Double click</span> to jump to file contents.
+          </p>
         </div>
       </div>
       
