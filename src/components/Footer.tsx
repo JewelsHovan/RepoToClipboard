@@ -10,14 +10,24 @@ const Footer: React.FC = () => {
           <p className="text-gray-600 text-sm">
             © {currentYear} GitHub Repo Copier. All rights reserved.
           </p>
-          <a
-            href="https://www.julienhovan.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-primary hover:text-primary/80 text-sm mt-2 sm:mt-0"
-          >
-            Visit my website
-          </a>
+          <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4">
+            <a
+              href="https://www.julienhovan.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-primary hover:text-primary/80 text-sm"
+            >
+              Visit my website
+            </a>
+            <a
+              href="https://github.com/JewelsHovan/RepoToClipboard"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-primary hover:text-primary/80 text-sm"
+            >
+              (Open source repo here)
+            </a>
+          </div>
         </div>
       </div>
     </footer>
