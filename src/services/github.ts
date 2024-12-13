@@ -1,9 +1,7 @@
 import axios from 'axios';
 import { 
-  GITHUB_TOKEN, 
   MAX_DEPTH, 
   MAX_FILES, 
-  GITHUB_API_BASE,
   API_HEADERS 
 } from '../config/constants';
 import { EXCLUDED_PATTERNS } from '../config/excludePatterns';

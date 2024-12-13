@@ -5,7 +5,6 @@ import RepoContents from './components/RepoContents'
 import Footer from './components/Footer'
 import TreeVisualization from './components/TreeVisualization'
 import { useGitHubRepo } from './hooks/useGitHubRepo'
-import { RepoData } from './types/github'
 
 function App() {
   const { repoData, loading, error, fetchRepo } = useGitHubRepo()

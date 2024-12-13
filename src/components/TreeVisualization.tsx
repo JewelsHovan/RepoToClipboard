@@ -1,5 +1,5 @@
 import { useCallback, useState, useRef, useEffect } from 'react';
-import { Tree, RawNodeDatum, TreeProps } from 'react-d3-tree';
+import { Tree, RawNodeDatum } from 'react-d3-tree';
 
 interface TreeVisualizationProps {
   contents: any[];

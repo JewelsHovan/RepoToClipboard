@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
 import { GitHubService } from '../services/github';
-import { RepoData, GitHubApiError } from '../types/github';
+import { RepoData } from '../types/github';
 
 interface UseGitHubRepo {
   repoData: RepoData | null;
